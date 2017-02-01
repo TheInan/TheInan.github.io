@@ -1,148 +1,23 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<style>
-  body {
-    padding: 100px;
-    width: 1000px;
-    margin: auto;
-    text-align: left;
-    font-weight: 300;
-    font-family: 'Open Sans', sans-serif;
-    color: #121212;
-  }
-  h1, h2, h3, h4 {
-    font-family: 'Source Sans Pro', sans-serif;
-  }
-</style>
-<title>CS 184 Rasterizer</title>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
-</head>
+---
+layout: default
+---
 
+<div class="home">
 
-<body>
+  <h1 class="page-heading">Posts</h1>
 
-<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
-<h1 align="middle">Project 1: Rasterizer</h1>
-<h2 align="middle">Inan Husain, CS184-adr</h2>
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
 
-<br><br>
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
 
-<div>
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
 
-<h2 align="middle">Overview</h2>
-<p>Give a high-level overview of what you implemented in this project. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the project.</p>
-
-<h2 align="middle">Section I: Rasterization</h2>
-
-<h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
-
-<p>Right now, my rasterization process involves defining the bounding box of
-the triangle first by taking the min and max x and y values of the 3 points.
-Then, I iterate through that square by looking at the center of each pixel in
-the square, applying the halfplane formula we learned in class 3 times, and then
-checking to see if the 3 results all have the same sign. If they do the point
-is in the triangle, and I fill that pixel. <br><br>
-
-I know that this isn't slower than checking each sample in the bounding box because
-that is literally what my algorithm does.<br>
-Below is an image of <em>basic/test4.svg</em> after doing this part, centered on the corner of the lower
-left triangle.</p>
-
-<div align="middle">
-  <table style="width=100%">
-      <img src="images/part1.png" align= "middle" width ="800px"/>
-    <!-- <tr>
-      <td>
-        <img src="images/image1.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
-      </td>
-      <td>
-        <img src="images/image2.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
-      </td>
-    </tr>
-    <br>
-    <tr>
-      <td>
-        <img src="images/image3.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
-      </td>
-      <td>
-        <img src="images/image4.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
-      </td>
-    </tr> -->
-  </table>
 </div>
-
-
-<h3 align="middle">Part 2: Antialiasing triangles</h3>
-<p> Modifying the code to allow for supersampling didn't require that much change.
-    First I added 2 more for loops so that I could iterate through the sub-pixels
-    inside each pixel. I then took the center of each sub-pixel and sampled just as
-    before, assigning each sub-pixel a color just like Part 1.
-    I then needed to change the get_pixel_color so that it averaged all of the
-    sub-pixels' colors instead of just taking one of them. The code iterates through
-    each sub-pixel and then divides by the number of samples to return the correct color.
-    With these changes, supersampling to antialias now works by using the extra samples
-    to allow for "in between" shades of colors. <br> <br>
-
-    Below are screenshots of <em> basic/test4.svg</em> and a pixel inspection of the skinny, red traingle with
-    sample rates of 1, 4, and 16. You can see clearly how supersampling allows for the
-    gaps in the triangle to be filled in, and how the edges get smoother too. </p>
-    <div align="middle">
-      <table style="width=100%">
-        <tr>
-          <td>
-            <img src="images/part2-1.png" align= "middle" width ="350px"/>
-            <figcaption align="middle">Supersampling with the default rate of 1 per pixel</figcaption>
-          </td>
-          <td>
-            <img src="images/part2-2.png" align="middle" width="350px"/>
-            <figcaption align="middle">Supersampling with a rate of 4 per pixel. Gap is closing, and the edges aren't so jagged.</figcaption>
-          </td>
-          <td>
-            <img src="images/part2-3.png" align="middle" width="350px"/>
-            <figcaption align="middle">Supersampling with a rate of 16 per pixel. Gap has compltely closed and the edges look much smoother here.</figcaption>
-          </td>
-        </tr>
-      </table>
-    </div>
-
-
-
-<h3 align="middle">Part 3: Transforms</h3>
-<p> All I really need to do for this part was write 3 small lines of code in
-  <em>transforms.cpp</em> I just used the homogeneous matrix transformations from
-  class. I then edited <em>svg/transforms/robot.svg</em> to make it look like it was
-  running. Basically I just took the parts I already had and rotated and translated them
-  until I thought it look right. I don't think I did anything really intelligent here.
-  And then I gave cubeman a nice grass field to run on :)
-</p>
-<div align="middle">
-  <img src="images/part3.png" align="middle" width="400px"/>
-</div>
-
-
-
-<h2 align="middle">Section II: Sampling</h2>
-
-<h3 align="middle">Part 4: Barycentric coordinates</h3>
-
-
-<h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
-
-
-<h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
-
-
-
-<h2 align="middle">Section III: Art Competition</h2>
-<p>If you are not participating in the optional art competition, don't worry about this section!</p>
-
-<h3 align="middle">Part 7: Draw something interesting!</h3>
-
-</body>
-</html>
