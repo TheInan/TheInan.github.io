@@ -15,7 +15,7 @@
     font-family: 'Source Sans Pro', sans-serif;
   }
 </style>
-<title>CS 184 Mesh Editor</title>
+<title>CS 184 Final Project Proposal</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
 </head>
@@ -32,10 +32,43 @@
 <div>
 
 <h2 align="middle">Summary</h2>
-<p>Give a high-level overview of what you implemented in this project. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the project.</p>
+<p>The goal of our project is going to be convert point cloud meshes (in the <em>ply</em> format) to meshes(in the <em>dae</em>) format.</p>
 
-<h2 align="middle">Part I: Masses and springs</h2>
+<h2 align="middle">Problem Description</h2>
+<p> 3D scanners normally output data in the form of a point cloud, which is useful for many different applications in industry such as CAD modeling. Converting
+  these point clouds to meshes is a problem worth solving because it gives us greater geometric data with which we can use algorithms for ray tracing, collision detection, or and rigid-body dynamics on
+  the constructed mesh. This is definitely a challenging problem given the huge space of the problem. Point clouds can contain thousands of points, how are we supposed to connect these algorithmically in an efficient but also correct manner.
+  The large number of points to connect to allows for the creation of undesirable meshes with unbalanced polygons. Some post processing may be necessary. We are looking to use the ball pivot algorithm in order to build the mesh, with perhaps using Poisson reconstruction as a
+  stretch goal. Aside from that some other extensions we were looking at for this project include preprocessing for the point cloud, getting BRDF values with flash/no flash and assign them to a material, creation of STL files from the mesh so that it may be 3D printed and so on.</p>
+
+<h2 align="middle">Goals and deliverables</h2>
+<h4> Plan to deliver </h4>
+<p>A working implementation of the Ball Pivot algorithm (BPA) using the MeshEdit project as base so that we have a working foundation for HalfEdge. We would like to deliver images of the final constructed mesh as well as a video or gif of the construction process.</p>
+<h4> Hope to deliver </h4>
+<p> An implementation of Poisson construction which would have similar deliverables as the BPA, and we would also produce comparison images and times between the two algorithms on different point cloud inputs</p>
+<p> Post processing of the constructed mesh, we would likely produce comparison images of the mesh before and after processing</p>
+<p> Producing BRDF values and then using our raytracer to render the image </p>
+<p> Picture to point cloud, deliverables would just be ply files and the images from which we produced them </p>
+<p> Creation of STL files from meshes so that we can 3D print some of this stuff </p>
+<p> We do recognize that is definitely going to be impossible to do any more than 1 or 2 or these stretch goals, these are mostly just listed as possibilities that we would like to investigate further </p>
 
 
+<h2 align="middle">Schedule</h2>
+<h4> Week One </h4>
+<p> Be able to load point cloud into MeshEdit, be able to produce point cloud in GUI from an input ply file. </p>
+<h4> Week Two </h4>
+<p> Naive mesh generated from the points that were read in, not necessarily a full implemenation of Ball Pivot algorithm </p>
+<h4> Week Three </h4>
+<p> Get a full working implementation of BPA </p>
+<h4> Week Four </h4>
+<p> Reserved for one of the stretch, likely picture to point cloud</p>
+<p> This is honestly a very conservative estimate for what we hope to accomplish with this project. Ideally we'd like to get a full working implementation of BPA sooner, probably around week 2.
+  This would give us more time to dedicate to one or more of our stretch goals. </p>
+
+<h2 align="middle"> Resources</h2>
+<p> We would use the <a href="http://graphics.stanford.edu/data/3Dscanrep/">The Stanford 3D Scanning Repository</a> as a place to get our initial point clouds from. We would use these two papers <a href="http://www.research.ibm.com/vistechnology/pdf/bpa_tvcg.pdf">here</a> and
+   <a href="http://research.microsoft.com/en-us/um/people/hoppe/poissonrecon.pdf">here</a> to implement BPA and Poisson reconstruction. We'd use these videos (<a href="https://www.youtube.com/watch?v=j7PGgrMSi5o">here</a> and <a href="https://www.youtube.com/watch?v=avl4xyyp730&t=36s">here</a>) as starting points for generating a point cloud from several pictures taken.
+   Should we decide to work on more of the other stretch goals, we'll like find our resources for those ideas as well. </p>
+<p> We will be developing using C++ on either OS X or Ubuntu using the MeshEdit code from Project 2/3. </p>
 </body>
 </html>
