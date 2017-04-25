@@ -24,8 +24,52 @@
 <body>
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
-<h1 align="middle">Final Project Proposal: Point Cloud to Mesh</h1>
+<h1 align="middle">Milestone Status Update</h1>
 <h2 align="middle">Daniel Khasanov and Inan Husain (CS184-ade and CS184-adr)</h2>
+
+
+<h2 align="middle">Summary</h2>
+<p> So we've met our goal of being able to take a ply file and load into the existing MeshEdit structure and we are currently producing an
+  extremely naive implementation of converting the point cloud to a mesh. </p>
+<h2 align="middle">Steps towards progress</h2>
+<p> The first step we had to take was being able to parse the ply files. We did this using the RPly library suggested by the previous years point cloud to mesh group.
+  From here, we simple had a file that contained the number of vertices and every line after that contained the x,y, and z coordinates of the vertex. We then created another parser in the <em>collada.h</em>
+  file that took these vertices, normalized their positions, and pushed them into the scene. Of course, MeshEdit doesn't really render individual vertices so we just went straight to trying to convert the points into a mesh because we don't have time to figure out a good way to render the points in OpenGl.
+  Next we worked on tried a couple ways to make this more like a point cloud, and we found the best way was to link 3 consecutive points with some added entropy.
+  Our first naive implementation is simply connecting the polygons together in sequence. While the results are almost certainly not good for a final result, we're pretty happy where we are, as we're still on pace with our goals set. <br><br> Next steps are basically just getting the Ball Pivot Algorithm to work at this point, and hopefully being able to then work on some of our stretch goals afterwards.
+</p>
+<div align="center">
+    <table style="width=100%">
+        <tr>
+            <td align="middle">
+            <img src="ball_nearest_neighbor_2.png" width="480px" />
+            <figcaption align="middle">Image of sphere point cloud loaded in</figcaption>
+            <td align="middle">
+            <img src="ball2_naive.png" width="480px" />
+            <figcaption align="middle">Preliminary mesh for sphere point cloud</figcaption>
+        </tr>
+    </table>
+</div>
+<div align="center">
+    <table style="width=100%">
+        <tr>
+            <td align="middle">
+            <img src="Sequential_bunny_1.png" width="480px" />
+            <figcaption align="middle">Image of bunny point cloud loaded in</figcaption>
+            <td align="middle">
+            <img src="bunny_naive.png" width="480px" />
+            <figcaption align="middle">Preliminary mesh for bunny point cloud</figcaption>
+        </tr>
+    </table>
+</div>
+
+<h2 align="middle">Milestone Video and Slideshow</h2>
+<p>The slides can be viewed <a href="https://drive.google.com/file/d/0B3RVreGMg1lQd3B0clFZN1dNVEU/view?usp=sharing">here</a> and this is the link to our Youtube video: <a href="https://youtu.be/CYN6ynNkU6E">https://youtu.be/CYN6ynNkU6E</a>. </p>
+
+<br> <br>
+<hr>
+<h2 align="middle">Final Project Proposal: Point Cloud to Mesh</h1>
+
 
 <br><br>
 
