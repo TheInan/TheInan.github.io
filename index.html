@@ -24,8 +24,103 @@
 <body>
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
-<h1 align="middle">Milestone Status Update</h1>
+<h1 align="middle">Final Deliverables: Point Cloud to Mesh Reconstruction</h1>
 <h2 align="middle">Daniel Khasanov and Inan Husain (CS184-ade and CS184-adr)</h2>
+
+
+<h2 align="middle">Abstract</h2>
+<p> Our project was to read in ply files and construct meshes using the ball pivoting algorithm, outlined in
+  an IBM research paper. The basics of the algorithm are that we take the vertex locations from the ply file and select a suitable seed triangle through brute force.
+  From there we pivot the ball around the vertices of our seed, building our mesh outward from there until we can't reach anymore points, at which point we pick another triangle.
+  The below image is a good 2D visualization of what is happening here. </p>
+  <div align="center">
+    <img src="roll.png" width="480px" />
+  </div>
+  <p> Expanding the mesh requires various reassingments, additions, and deletions in the halfEdgeMesh structure taken from project 2.
+    Other problems involved in this process include deciding on the radius to use for our ball and being able to search for vertices efficiently. </p>
+<h2 align="middle">Technical Approach</h2>
+<p> The first order of business was getting points from a ply file into an easily readible format, which we did using the RPLY library as discussed before. Then we calculate normals for these points.
+  This was considerably harder than the process we went through in project 2 for doing this because we had no face normals to work with. Thus we used a combination of planar regression and the points relation to the overall structure instead to calculate the normal. This is a little different from the paper and what the previous year's group did since
+  the paper had the normal data from the scan, and last years group kept the normal data from the mesh before stripping the edge and face geometry to try reconstruction,
+<p> Next came the process of learning how to use OpenGL to get these points and normals to render so that we could have a truly functional GUI compared to our milestone GUI. Below are some of the results. </p>
+<div align="center">
+    <table style="width=100%">
+        <tr>
+            <td align="middle">
+            <img src="cow.png" width="480px" />
+            <td align="middle">
+            <img src="cow_computed_normals.png" width="480px" />
+        </tr>
+    </table>
+</div>
+
+<p> Next came the process of creating an acceleration structure. The paper used a data structure called an octree to do this, but what we did instead was borrow from the cloth animation project
+  to create a spaial hashmap in which divide the vertices into a grid of voxels. These voxels have a size based on the radius of the ball. Most papers decided upon this radius size empirically or estimate a good one based on a formula but we did a sort of binary search for the radius by recreating the hashmap until we had what we thought was an acceptable number of vertices per voxel.
+  For us this meant that each vertex needed to have at least 3 other vertices in its neighborhood, but we also wanted the average number of vertices per voxel to get as close to 3 without violating that constraint. If we had more time, we would've liked to create a GUI representation of these voxels, much like the BVH representation from the path tracing project. </p>
+
+<p>The next problem was finding a seed triangle. This was done through a brute force method mainly, and since we needed to search for 3 vertices, this is the most computationally intense part of the project, taking N^3 time. The next part of the project was expanding the front by pivoting the ball on the boundaries of the current mesh. Pivoting the ball itself was relatively simple, it was process that involved computing the circumcenter of two points on our fringe and the vertex being considered to be added to the mesh and determining if it would match a ball with the radius we definied. Adding vertices however is a much different story. There were 4 different cases for how a vertex could be added to the mesh as shown in the image below.</p>
+<div align="center">
+  <img src="front.png" width="480px" />
+</div>
+<p> This was probably the most difficult part of the project. Even though these edge cases look pretty well defined from the diagram above, in practice the faces, edges, and halfedges we needed to update were dependent on the direction the ball pivoted in from, thus giving us a large number of edge cases that we had little ability to account for. We ran into many problems where we were building the mesh and it would suddenly stop, leaving us to try and
+  out what edge case we had missed this time. We will leave a video in the results section so that you can see how this looks when the mesh is built one triangle at a time. </p>
+
+<p> We have many problems with malformed meshes, especially when normals aren't well defined. This leads to us being able to make patches of the mesh before hitting a segfault. If we had more time, we would've liked a way to catch these segfault and continue creating more patches until we had an almost complete mesh, but unfortunately we didn't have as much time to work on the project as we would've liked. Another problem we had was with normal calculation. Using just planar regression isn't helpful when you have many points on a surface that has a large gradient, and it also doesn't give us the correction direction for the normal all the time. That is why we made the decision to base our normals also on centroids of the various neighborhoods of points. The decision to use the hashmap instead of octree was something we thought would make our code simpler, and also provide us a computationally efficient way to choose a radius. If we had done an octree instead, it would've been infeasible to repeatedly create such a complex structure for different radius valuues. The hashmap was essentially getting us two birds with one stone </p>
+
+<p> Some of the lessons we learned include a very good appreciation for how complicated geometry processing can really get and an ability to create a working product in a very short amount of time...</p>
+
+<h2 align="middle">Results</h2>
+<p> This is probably the best result we got back. The interesting thing  about this construction is that even though most of this was built from one seed triangle (colored in white), many hole filling seed triangles were created all sequentially at the very end.</p>
+<div align="center">
+    <table style="width=100%">
+        <tr>
+            <td align="middle">
+            <img src="cube.png" width="480px" />
+            <figcaption align="middle">The original mesh of a cube that has undergone loop subdivision few times</figcaption>
+            <td align="middle">
+            <img src="cube2.png" width="480px" />
+            <figcaption align="middle">The recreated mesh after stripping all geometry from the cube except for the vertices</figcaption>
+        </tr>
+    </table>
+</div>
+<p> Here is an example of an incomplete mesh, created from the model of a torus. This is mostly due being unable to correctly generate the correction direction for many of the normals on the torus surface, which will stop the ball from pivoting in those incorrect patches. </p>
+<div align="center">
+    <table style="width=100%">
+        <tr>
+            <td align="middle">
+            <img src="torus.png" width="480px" />
+            <figcaption align="middle">Original mesh</figcaption>
+            <td align="middle">
+            <img src="torus1.png" width="480px" />
+            <figcaption align="middle"> (Lossy) Reconstruction</figcaption>
+        </tr>
+    </table>
+</div>
+
+<p> This is a patch that we got on our rabbit from just 1 seed triangle. If we had a little more time, we would've liked to put some of these patches together, and will likely display these results on the persistent website a within the next few days. I will not however, that this mesh looks really good and is very complete, much more complete than previous year's groups as there are no visible holes in the patch. With a few more hours of work, we feel that achieviing a complete mesh would be possible.</p>
+<div align="center">
+  <img src="bunny.png" width="480px" />
+</div>
+
+<p> Now here is a video of the mesh being constructed one triangle at a time. </p>
+<!-- <object width="420" height="315"
+data="https://www.youtube.com/embed/XGSy3_Czz8k">
+</object> -->
+<div align ="center">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/X19hUHGO7SU" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<h2 align="middle">Contributions to the project</h2>
+<p> Daniel: Handled the algorithms for finding the seed triangle, pivoting the ball, and expanding the front (all of the mesh reassignments/adjustments)
+<p> Inan: Handled the ply conversion to a readable format, the rendering pipeline for the GUI, building the voxel acceleration structure, calculating/making normals consistent and the algorithm for searching for the proper radius to use </p>
+<h2 align="middle">References</h2>
+<a href="http://www.research.ibm.com/vistechnology/pdf/bpa_tvcg.pdf">http://www.research.ibm.com/vistechnology/pdf/bpa_tvcg.pdf</a> <br>
+<a href="http://www.ipol.im/pub/art/2014/81/article_lr.pdf">http://www.ipol.im/pub/art/2014/81/article_lr.pdf</a>
+
+
+<hr>
+<h1 align="middle">Milestone Status Update</h1>
+
 
 
 <h2 align="middle">Summary</h2>
